@@ -1,0 +1,16 @@
+{
+  "name": "PITAGORA! — Matematica, fisica e musica",
+  "short_name": "PITAGORA!",
+  "description": "Laboratorio interattivo sul monocordo, i rapporti pitagorici, la scala pitagorica, il comma pitagorico, gli armonici e la relazione fra lunghezza e frequenza.",
+  "id": "./pitagora-pwa",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f7fb",
+  "theme_color": "#172554",
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
