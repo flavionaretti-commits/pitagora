@@ -137,6 +137,12 @@
     $('#snapRatioBtn').addEventListener('click',()=>{state.free=false;const r=RATIOS[state.ratioIndex];$('#freeLength').value=(100*r.a/r.b).toFixed(1);updateMonochord()});
     $('#playBase').addEventListener('click',()=>playCurrent(false));
     $('#playShort').addEventListener('click',()=>playCurrent(true));
+    const pressGroup=$('#pressGroup');
+    const pressString=()=>playCurrent(true);
+    pressGroup.addEventListener('click',pressString);
+    pressGroup.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pressString()}});
+    pressGroup.addEventListener('pointerdown',()=>pressGroup.classList.add('is-pressed'));
+    ['pointerup','pointercancel','pointerleave'].forEach(type=>pressGroup.addEventListener(type,()=>pressGroup.classList.remove('is-pressed')));
     $('#playTogether').addEventListener('click',()=>{pluck(currentBase(),0,.9,.32);pluck(currentBase()/currentFraction(),0,.9,.32);animateString()});
     $('#playSequence').addEventListener('click',()=>{pluck(currentBase());pluck(currentBase()/currentFraction(),.82);animateString()});
   }
