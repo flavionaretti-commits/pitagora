@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172554">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PITAGORA!">
+  <title>PITAGORA! — Matematica, fisica e musica su una corda</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">π♪</div>
+        <div>
+          <h1>PITAGORA!</h1>
+          <p>Matematica · Fisica · Musica su una corda</p>
+        </div>
+      </div>
+      <div class="top-actions" aria-label="Comandi app">
+        <button id="projectionBtn" class="icon-btn" type="button" title="Modalità proiezione" aria-pressed="false">▣</button>
+        <button id="themeBtn" class="icon-btn" type="button" title="Cambia tema">☾</button>
+        <button id="soundBtn" class="icon-btn" type="button" title="Attiva/disattiva suono" aria-pressed="true">🔊</button>
+        <button id="infoBtn" class="icon-btn" type="button" title="Informazioni">i</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Sezioni dell'app">
+      <button class="tab is-active" type="button" data-tab="monocordo">Monocordo</button>
+      <button class="tab" type="button" data-tab="confronta">Confronta</button>
+      <button class="tab" type="button" data-tab="esperimento">Esperimento</button>
+      <button class="tab" type="button" data-tab="scala">Scala pitagorica</button>
+      <button class="tab" type="button" data-tab="armonici">Armonici</button>
+      <button class="tab" type="button" data-tab="sfide">Sfide</button>
+    </nav>
+
+    <main>
+      <section id="tab-monocordo" class="panel tab-panel is-active" aria-labelledby="monoTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">LABORATORIO</p>
+            <h2 id="monoTitle">Il monocordo pitagorico</h2>
+          </div>
+          <label class="field compact">Nota di partenza
+            <select id="baseNote">
+              <option value="130.81278265">DO3</option>
+              <option value="146.83238396">RE3</option>
+              <option value="164.81377846">MI3</option>
+              <option value="174.61411572">FA3</option>
+              <option value="195.99771799">SOL3</option>
+              <option value="220">LA3</option>
+              <option value="246.94165063">SI3</option>
+              <option value="261.6255653">DO4</option>
+              <option value="440">LA4</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="ratio-strip" id="ratioStrip" aria-label="Rapporti disponibili"></div>
+
+        <div class="monochord-card">
+          <div class="interval-banner">
+            <div>
+              <span id="intervalName" class="interval-name">OTTAVA</span>
+              <span id="ratioName" class="ratio-name">1 : 2</span>
+            </div>
+            <div id="centsBadge" class="cents-badge">esatta nell'ottava</div>
+          </div>
+
+          <svg id="monochord" viewBox="0 0 1000 330" role="img" aria-label="Monocordo con punto di pressione e parte vibrante evidenziata">
+            <defs>
+              <linearGradient id="wood" x1="0" x2="1">
+                <stop offset="0" stop-color="#c99a5a"/>
+                <stop offset="0.5" stop-color="#e2bd7a"/>
+                <stop offset="1" stop-color="#b77b3d"/>
+              </linearGradient>
+            </defs>
+            <rect x="45" y="82" width="910" height="148" rx="28" fill="url(#wood)" opacity=".92"/>
+            <rect x="68" y="105" width="864" height="102" rx="18" fill="rgba(255,255,255,.16)"/>
+            <rect x="83" y="115" width="18" height="84" rx="4" class="bridge"/>
+            <rect x="899" y="115" width="18" height="84" rx="4" class="bridge"/>
+            <line id="wholeString" x1="100" y1="156" x2="900" y2="156" class="string-muted"/>
+            <line id="activeString" x1="500" y1="156" x2="900" y2="156" class="string-active"/>
+            <g id="pressGroup" transform="translate(500 0)">
+              <circle cx="0" cy="73" r="20" class="press-head"/>
+              <line x1="0" y1="91" x2="0" y2="206" class="press-line"/>
+              <text x="0" y="42" text-anchor="middle" class="svg-label strong">PREMI QUI</text>
+            </g>
+            <path id="measureBrace" d="M500 245 v14 H900 v-14" class="brace"/>
+            <text id="lengthSvgLabel" x="700" y="294" text-anchor="middle" class="svg-label strong">L' = 1/2 L</text>
+            <text x="100" y="280" text-anchor="middle" class="svg-label">0</text>
+            <text x="900" y="280" text-anchor="middle" class="svg-label">L</text>
+          </svg>
+
+          <div class="play-row">
+            <button id="playBase" class="primary" type="button">♫ Corda intera</button>
+            <button id="playShort" class="primary" type="button">♫ Corda premuta</button>
+            <button id="playTogether" class="secondary" type="button">♫ Insieme</button>
+            <button id="playSequence" class="secondary" type="button">▶ Confronta</button>
+          </div>
+        </div>
+
+        <div class="formula-grid">
+          <article class="metric">
+            <span>Lunghezza vibrante</span>
+            <strong id="lengthFraction">1/2 L</strong>
+            <small id="lengthPercent">50,0% della corda</small>
+          </article>
+          <article class="metric">
+            <span>Rapporto frequenze</span>
+            <strong id="freqRatio">2/1</strong>
+            <small id="freqMultiplier">f' = 2,000 × f</small>
+          </article>
+          <article class="metric">
+            <span>Frequenza ottenuta</span>
+            <strong id="resultFrequency">261,63 Hz</strong>
+            <small id="nearestNote">≈ DO4</small>
+          </article>
+          <article class="metric equation">
+            <span>La relazione chiave</span>
+            <strong>f ∝ 1/L</strong>
+            <small id="verbalRelation">Dimezzo la lunghezza → raddoppio la frequenza</small>
+          </article>
+        </div>
+
+        <div class="free-lab">
+          <div class="free-head">
+            <div>
+              <h3>Esplora liberamente</h3>
+              <p>Sposta il ponticello: l'app cerca la frazione semplice più vicina.</p>
+            </div>
+            <button id="snapRatioBtn" class="ghost" type="button">Torna al rapporto scelto</button>
+          </div>
+          <label class="slider-label" for="freeLength">Parte vibrante della corda: <strong id="freeLengthValue">50,0%</strong></label>
+          <input id="freeLength" type="range" min="25" max="100" step="0.1" value="50">
+          <div class="approx-row">
+            <span>Frazione vicina: <strong id="approxFraction">1/2</strong></span>
+            <span>Rapporto frequenza: <strong id="approxFreq">2/1</strong></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-confronta" class="panel tab-panel" aria-labelledby="compareTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">ASCOLTA E OSSERVA</p>
+            <h2 id="compareTitle">Confronta due rapporti</h2>
+          </div>
+        </div>
+        <div class="compare-controls">
+          <label class="field">Prima corda<select id="compareA"></select></label>
+          <div class="versus">VS</div>
+          <label class="field">Seconda corda<select id="compareB"></select></label>
+        </div>
+        <div class="double-string">
+          <div class="compare-string-card">
+            <div class="compare-label"><strong id="compAName">Ottava</strong><span id="compARatio">1 : 2</span></div>
+            <div class="mini-string"><span id="miniA" class="mini-active"></span></div>
+            <div id="compAFreq" class="compare-frequency">261,63 Hz</div>
+            <button id="playA" class="primary" type="button">♫ Ascolta A</button>
+          </div>
+          <div class="compare-string-card">
+            <div class="compare-label"><strong id="compBName">Quinta giusta</strong><span id="compBRatio">2 : 3</span></div>
+            <div class="mini-string"><span id="miniB" class="mini-active"></span></div>
+            <div id="compBFreq" class="compare-frequency">196,22 Hz</div>
+            <button id="playB" class="primary" type="button">♫ Ascolta B</button>
+          </div>
+        </div>
+        <div class="play-row centered">
+          <button id="playAB" class="secondary" type="button">♫ Suona insieme</button>
+          <button id="playABSeq" class="secondary" type="button">▶ A → B</button>
+        </div>
+        <div class="relationship-box" id="compareRelationship"></div>
+      </section>
+
+      <section id="tab-esperimento" class="panel tab-panel" aria-labelledby="experimentTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">PREVEDI → VERIFICA</p>
+            <h2 id="experimentTitle">Esperimento</h2>
+          </div>
+          <button id="newExperiment" class="secondary" type="button">↻ Nuovo problema</button>
+        </div>
+        <div class="experiment-card">
+          <p id="experimentPrompt" class="experiment-prompt"></p>
+          <div class="experiment-given" id="experimentGiven"></div>
+          <form id="experimentForm" class="answer-form">
+            <label class="field">La nuova frequenza sarà…
+              <div class="input-with-unit"><input id="experimentAnswer" inputmode="decimal" type="text" autocomplete="off" placeholder="es. 360"><span>Hz</span></div>
+            </label>
+            <button class="primary" type="submit">Verifica</button>
+          </form>
+          <div id="experimentFeedback" class="feedback" aria-live="polite"></div>
+          <button id="experimentListen" class="ghost" type="button" hidden>♫ Ascolta il risultato</button>
+        </div>
+      </section>
+
+      <section id="tab-scala" class="panel tab-panel" aria-labelledby="scaleTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">DAL 3/2 ALLA SCALA</p>
+            <h2 id="scaleTitle">Costruisci la scala pitagorica</h2>
+          </div>
+          <label class="field compact">DO di partenza
+            <select id="scaleBase">
+              <option value="130.81278265">DO3 — 130,81 Hz</option>
+              <option value="261.62556530" selected>DO4 — 261,63 Hz</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="scale-intro">
+          <div class="scale-rule">
+            <span>Ogni nuova nota nasce da una</span>
+            <strong>QUINTA GIUSTA = × 3/2</strong>
+            <small>Se supera l'ottava, la dividiamo per 2 per riportarla fra DO e DO.</small>
+          </div>
+          <div class="scale-rule math">
+            <span>Operazione</span>
+            <strong>f nuova = f × 3/2 ÷ 2ⁿ</strong>
+            <small>n è il numero di ottave necessarie per tornare nell'intervallo [1, 2).</small>
+          </div>
+        </div>
+
+        <div class="fifths-lab">
+          <div class="free-head">
+            <div>
+              <h3>Il viaggio delle quinte</h3>
+              <p>Parti da DO e aggiungi una quinta alla volta. Dopo 12 quinte dovresti tornare a DO… quasi!</p>
+            </div>
+            <div class="scale-actions">
+              <button id="fifthReset" class="ghost" type="button">↺ Riparti</button>
+              <button id="fifthAdd" class="primary" type="button">+ Una quinta</button>
+              <button id="fifthAll" class="secondary" type="button">Mostra tutte</button>
+            </div>
+          </div>
+          <div id="fifthProgress" class="fifth-progress" aria-live="polite"></div>
+          <div id="fifthChain" class="fifth-chain" aria-label="Successione delle quinte pitagoriche"></div>
+          <div class="play-row centered">
+            <button id="playLastFifth" class="secondary" type="button">♫ Ascolta l'ultima nota</button>
+            <button id="playFifthJourney" class="secondary" type="button">▶ Ascolta il viaggio</button>
+          </div>
+        </div>
+
+        <div class="diatonic-lab">
+          <div class="free-head">
+            <div>
+              <h3>Scala di DO pitagorica</h3>
+              <p>Per la scala di DO usiamo una quinta sotto e cinque quinte sopra la tonica, poi riportiamo tutto nella stessa ottava.</p>
+              <div class="scale-source-chain" aria-label="Catena di quinte per la scala di DO">FA ← DO → SOL → RE → LA → MI → SI</div>
+            </div>
+            <button id="playPythScale" class="primary" type="button">▶ Suona la scala</button>
+          </div>
+          <div id="pythKeys" class="pyth-keys" aria-label="Tasti della scala pitagorica"></div>
+          <div class="scale-table-wrap">
+            <table class="scale-table">
+              <thead><tr><th>Nota</th><th>Rapporto</th><th>Frequenza</th><th>vs temperata</th></tr></thead>
+              <tbody id="scaleTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="comma-lab">
+          <div>
+            <p class="eyebrow">IL PICCOLO ERRORE CHE CAMBIA TUTTO</p>
+            <h3>Il comma pitagorico</h3>
+            <p>Dodici quinte pure non coincidono esattamente con sette ottave. La differenza è piccola, ma si può misurare e perfino ascoltare come battimento.</p>
+          </div>
+          <div class="comma-equation">
+            <span>(3/2)<sup>12</sup> ÷ 2<sup>7</sup></span>
+            <strong>= 531441 / 524288</strong>
+            <b>≈ 1,013643</b>
+          </div>
+          <div class="comma-metrics">
+            <article><span>Differenza</span><strong id="commaCents">23,46 cent</strong></article>
+            <article><span>DO puro</span><strong id="commaBaseFreq">261,63 Hz</strong></article>
+            <article><span>Dopo 12 quinte</span><strong id="commaSharpFreq">265,19 Hz</strong></article>
+            <article><span>Battimenti</span><strong id="commaBeatFreq">3,57 al secondo</strong></article>
+          </div>
+          <div class="comma-bars" aria-hidden="true">
+            <div><span>7 ottave</span><i class="bar-octave"></i></div>
+            <div><span>12 quinte</span><i class="bar-fifths"></i></div>
+          </div>
+          <div class="play-row centered">
+            <button id="playCommaBase" class="secondary" type="button">♫ DO di riferimento</button>
+            <button id="playCommaSharp" class="secondary" type="button">♫ DO dopo 12 quinte</button>
+            <button id="playCommaTogether" class="primary" type="button">♫ Insieme: senti i battimenti</button>
+          </div>
+          <p class="note-box"><strong>Perché conta?</strong> Se si insiste su quinte perfettamente pure, il cerchio non si chiude. Da qui nasce uno dei grandi problemi storici dell'accordatura e, molti secoli dopo, il compromesso del temperamento equabile.</p>
+        </div>
+      </section>
+
+      <section id="tab-armonici" class="panel tab-panel" aria-labelledby="harmonicsTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">ONDE STAZIONARIE</p>
+            <h2 id="harmonicsTitle">La serie armonica</h2>
+          </div>
+          <label class="field compact">Fondamentale
+            <select id="harmonicBase">
+              <option value="110">LA2 — 110 Hz</option>
+              <option value="130.81278265">DO3 — 130,81 Hz</option>
+              <option value="220" selected>LA3 — 220 Hz</option>
+            </select>
+          </label>
+        </div>
+        <div id="harmonicButtons" class="harmonic-buttons"></div>
+        <div class="wave-card">
+          <svg id="harmonicSvg" viewBox="0 0 1000 320" role="img" aria-label="Forma dell'armonica selezionata">
+            <line x1="80" y1="160" x2="920" y2="160" class="axis-line"/>
+            <path id="wavePath" class="wave-path" d=""></path>
+            <g id="nodesGroup"></g>
+          </svg>
+          <div class="harmonic-readout">
+            <div><span>Armonica</span><strong id="harmonicN">2ª</strong></div>
+            <div><span>Lunghezza caratteristica</span><strong id="harmonicLength">1/2 L</strong></div>
+            <div><span>Frequenza</span><strong id="harmonicFreq">440 Hz</strong></div>
+          </div>
+          <button id="playHarmonic" class="primary wide" type="button">♫ Ascolta questa armonica</button>
+        </div>
+        <p class="note-box">Ogni armonica ha frequenza multipla intera della fondamentale: 2f, 3f, 4f… I nodi dividono la corda in parti uguali.</p>
+      </section>
+
+      <section id="tab-sfide" class="panel tab-panel" aria-labelledby="challengeTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">METTITI ALLA PROVA</p>
+            <h2 id="challengeTitle">Sfide pitagoriche</h2>
+          </div>
+          <div class="score"><span>Punti</span><strong id="scoreValue">0</strong></div>
+        </div>
+        <div class="challenge-card">
+          <div class="challenge-progress"><span id="challengeCount">1 / 10</span><div><i id="challengeBar"></i></div></div>
+          <p id="challengeQuestion" class="challenge-question"></p>
+          <div id="challengeAnswers" class="challenge-answers"></div>
+          <div id="challengeFeedback" class="feedback" aria-live="polite"></div>
+          <div class="challenge-actions">
+            <button id="challengeListen" class="ghost" type="button" hidden>♫ Ascolta</button>
+            <button id="challengeNext" class="primary" type="button" hidden>Prossima →</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>PITAGORA! · laboratorio interattivo di matematica, fisica e musica</span>
+      <span id="installHint">Funziona anche offline dopo l'installazione.</span>
+    </footer>
+  </div>
+
+  <dialog id="infoDialog">
+    <div class="dialog-head"><h2>Perché “PITAGORA!”?</h2><button id="closeInfo" class="icon-btn" type="button" aria-label="Chiudi">×</button></div>
+    <div class="dialog-body">
+      <p>La tradizione pitagorica mise in relazione gli intervalli musicali consonanti con semplici rapporti fra numeri interi. Sul monocordo, se tensione e densità lineare restano costanti, la frequenza è inversamente proporzionale alla lunghezza vibrante.</p>
+      <div class="info-equation">f ∝ 1/L</div>
+      <p>Per questo una corda lunga <strong>2/3</strong> dell'originale produce una frequenza <strong>3/2</strong> maggiore: la quinta giusta.</p>
+      <p class="historical-note"><strong>Nota storica:</strong> l'associazione fra Pitagora, monocordo e rapporti musicali appartiene alla tradizione pitagorica antica. Alcuni racconti celebri, come quello dei martelli nella fucina, sono considerati leggendari.</p>
+    </div>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
