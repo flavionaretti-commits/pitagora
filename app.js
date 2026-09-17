@@ -75,6 +75,10 @@
 
   function currentBase(){return Number($('#baseNote').value)}
   function currentFraction(){return state.free?state.freeFraction:(RATIOS[state.ratioIndex].a/RATIOS[state.ratioIndex].b)}
+  function setFreeFraction(value){
+    state.free=true; state.freeFraction=Math.max(.25,Math.min(1,Number(value)));
+    $('#freeLength').value=(state.freeFraction*100).toFixed(1); updateMonochord();
+  }
 
   function updateMonochord(){
     const ratio=RATIOS[state.ratioIndex], frac=currentFraction();
@@ -133,16 +137,50 @@
 
   function setupMonocord(){
     $('#baseNote').addEventListener('change',updateMonochord);
-    $('#freeLength').addEventListener('input',e=>{state.free=true;state.freeFraction=Number(e.target.value)/100;updateMonochord()});
+    $('#freeLength').addEventListener('input',e=>setFreeFraction(Number(e.target.value)/100));
     $('#snapRatioBtn').addEventListener('click',()=>{state.free=false;const r=RATIOS[state.ratioIndex];$('#freeLength').value=(100*r.a/r.b).toFixed(1);updateMonochord()});
     $('#playBase').addEventListener('click',()=>playCurrent(false));
     $('#playShort').addEventListener('click',()=>playCurrent(true));
     const pressGroup=$('#pressGroup');
+    const stringHit=$('#stringHit');
     const pressString=()=>playCurrent(true);
-    pressGroup.addEventListener('click',pressString);
+    const keyboardPluck=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pressString()}};
+    const svgPointerX=e=>{
+      const svg=$('#monochord'),matrix=svg.getScreenCTM(); if(!matrix)return null;
+      const point=svg.createSVGPoint(); point.x=e.clientX; point.y=e.clientY;
+      return point.matrixTransform(matrix.inverse()).x;
+    };
+    let dragPointer=null,dragStartX=0,dragOffsetX=0,dragMoved=false,ignoreClickUntil=0;
+    const dragToPointer=e=>{
+      const pointerX=svgPointerX(e); if(pointerX===null)return;
+      const markerX=Math.max(100,Math.min(700,pointerX-dragOffsetX));
+      setFreeFraction((900-markerX)/800);
+    };
+    pressGroup.addEventListener('click',e=>{if(performance.now()<ignoreClickUntil){e.preventDefault();return}pressString()});
     pressGroup.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pressString()}});
-    pressGroup.addEventListener('pointerdown',()=>pressGroup.classList.add('is-pressed'));
-    ['pointerup','pointercancel','pointerleave'].forEach(type=>pressGroup.addEventListener(type,()=>pressGroup.classList.remove('is-pressed')));
+    pressGroup.addEventListener('pointerdown',e=>{
+      if(!e.isPrimary||e.button!==0)return;
+      const pointerX=svgPointerX(e); if(pointerX===null)return;
+      dragPointer=e.pointerId; dragStartX=e.clientX; dragMoved=false;
+      dragOffsetX=pointerX-(900-800*currentFraction());
+      pressGroup.setPointerCapture?.(e.pointerId);
+      pressGroup.classList.add('is-pressed','is-dragging');
+    });
+    pressGroup.addEventListener('pointermove',e=>{
+      if(e.pointerId!==dragPointer)return;
+      if(Math.abs(e.clientX-dragStartX)>3)dragMoved=true;
+      if(dragMoved){e.preventDefault();dragToPointer(e)}
+    });
+    const finishDrag=(e,cancelled=false)=>{
+      if(e.pointerId!==dragPointer)return;
+      if(dragMoved&&!cancelled){dragToPointer(e);ignoreClickUntil=performance.now()+800}
+      try{pressGroup.releasePointerCapture?.(e.pointerId)}catch{}
+      dragPointer=null; pressGroup.classList.remove('is-pressed','is-dragging');
+    };
+    pressGroup.addEventListener('pointerup',e=>finishDrag(e));
+    pressGroup.addEventListener('pointercancel',e=>finishDrag(e,true));
+    stringHit.addEventListener('click',pressString);
+    stringHit.addEventListener('keydown',keyboardPluck);
     $('#playTogether').addEventListener('click',()=>{pluck(currentBase(),0,.9,.32);pluck(currentBase()/currentFraction(),0,.9,.32);animateString()});
     $('#playSequence').addEventListener('click',()=>{pluck(currentBase());pluck(currentBase()/currentFraction(),.82);animateString()});
   }

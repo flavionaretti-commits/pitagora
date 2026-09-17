@@ -85,14 +85,17 @@
             <rect x="68" y="105" width="864" height="102" rx="18" fill="rgba(255,255,255,.16)"/>
             <rect x="83" y="115" width="18" height="84" rx="4" class="bridge"/>
             <rect x="899" y="115" width="18" height="84" rx="4" class="bridge"/>
+            <line id="stringHit" x1="100" y1="156" x2="900" y2="156" class="string-hit" role="button" tabindex="0" aria-label="Pizzica la corda e ascolta la nota">
+              <title>Pizzica la corda e ascolta la nota</title>
+            </line>
             <line id="wholeString" x1="100" y1="156" x2="900" y2="156" class="string-muted"/>
             <line id="activeString" x1="500" y1="156" x2="900" y2="156" class="string-active"/>
-            <g id="pressGroup" transform="translate(500 0)" role="button" tabindex="0" aria-label="Premi la corda e ascolta la nota">
-              <title>Premi la corda e ascolta la nota</title>
+            <g id="pressGroup" transform="translate(500 0)" role="button" tabindex="0" aria-label="Premi per ascoltare oppure trascina il ponticello">
+              <title>Premi per ascoltare oppure trascina il ponticello</title>
               <rect x="-82" y="14" width="164" height="202" rx="28" class="press-hit"/>
               <circle cx="0" cy="73" r="20" class="press-head"/>
               <line x1="0" y1="91" x2="0" y2="206" class="press-line"/>
-              <text x="0" y="42" text-anchor="middle" class="svg-label strong">PREMI QUI</text>
+              <text x="0" y="42" text-anchor="middle" class="svg-label strong press-label">PREMI O TRASCINA</text>
             </g>
             <path id="measureBrace" d="M500 245 v14 H900 v-14" class="brace"/>
             <text id="lengthSvgLabel" x="700" y="294" text-anchor="middle" class="svg-label strong">L' = 1/2 L</text>
