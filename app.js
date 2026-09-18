@@ -132,8 +132,15 @@
     o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+duration+.04);
   }
 
-  function playCurrent(short=true,delay=0){const f=currentBase()/(short?currentFraction():1);pluck(f,delay);animateString()}
-  function animateString(){const s=$('#activeString');s.classList.remove('string-pluck');void s.getBoundingClientRect();s.classList.add('string-pluck')}
+  function playCurrent(short=true,delay=0){const f=currentBase()/(short?currentFraction():1);pluck(f,delay);animateString(short,delay)}
+  function animateString(short=true,delay=0){
+    const strings=short?[$('#activeString')]:[$('#wholeString'),$('#activeString')];
+    window.setTimeout(()=>{
+      strings.forEach(s=>s.classList.remove('string-pluck'));
+      void strings[0].getBoundingClientRect();
+      strings.forEach(s=>s.classList.add('string-pluck'));
+    },delay*1000);
+  }
 
   function setupMonocord(){
     $('#baseNote').addEventListener('change',updateMonochord);
@@ -181,8 +188,8 @@
     pressGroup.addEventListener('pointercancel',e=>finishDrag(e,true));
     stringHit.addEventListener('click',pressString);
     stringHit.addEventListener('keydown',keyboardPluck);
-    $('#playTogether').addEventListener('click',()=>{pluck(currentBase(),0,.9,.32);pluck(currentBase()/currentFraction(),0,.9,.32);animateString()});
-    $('#playSequence').addEventListener('click',()=>{pluck(currentBase());pluck(currentBase()/currentFraction(),.82);animateString()});
+    $('#playTogether').addEventListener('click',()=>{pluck(currentBase(),0,.9,.32);pluck(currentBase()/currentFraction(),0,.9,.32);animateString(false)});
+    $('#playSequence').addEventListener('click',()=>{pluck(currentBase());pluck(currentBase()/currentFraction(),.82);animateString(false);animateString(true,.82)});
   }
 
   function fillCompareSelects(){
